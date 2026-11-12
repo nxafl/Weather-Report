@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Generated weather datasets and report figures
+data/raw/
+data/processed/
+reports/figures/
