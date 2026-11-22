@@ -2,41 +2,27 @@
 
 **Aruzhan Bolatova - Student ID: 90402A**
 
-## Project overview
+## Project objective
 
-This project investigates how climate conditions have changed across
-six Italian cities between 1940 and 2025. It uses daily historical weather data
-from the [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api)
-and the ERA5 reanalysis model.
+This Python project investigates how weather and climate indicators changed in
+six Italian cities between 1940 and 2025. It uses daily historical data from
+the [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api)
+and its ERA5 reanalysis dataset.
 
-The complete Python workflow covers:
+The analysis answers five questions:
 
-- data acquisition through a public API;
-- validation and reproducible preprocessing;
-- exploratory data analysis;
-- temperature anomalies and climate normals;
-- heatwave and extreme-weather indicators;
-- annual and seasonal trend estimation;
-- confidence intervals and robust covariance estimates;
-- comparisons between cities;
-- separate analyses of rainfall amount, frequency and intensity.
+1. How has annual mean temperature changed?
+2. Which cities have the largest descriptive warming trends?
+3. Have hot days and tropical nights become more frequent?
+4. How have annual precipitation patterns changed?
+5. How do recent seasonal temperatures compare with the historical period?
 
-
-## Research questions
-
-The project examines the following questions:
-
-1. Have annual mean temperatures increased since 1940?
-2. Which cities have warmed most rapidly?
-3. Does the warming rate differ between seasons?
-4. Are minimum and maximum temperatures changing at the same rate?
-5. Have hot days, tropical nights and heatwaves become more frequent?
-6. Are city-level warming trends statistically different?
-7. Have rainfall amount, frequency or intensity changed over time?
 
 ## Study area and data
 
-| City | Area represented |
+The selected cities represent different parts of Italy:
+
+| City | Area |
 |---|---|
 | Milan | Northern Italy and the Po Valley |
 | Turin | Northwestern Italy and Alpine influence |
@@ -45,98 +31,83 @@ The project examines the following questions:
 | Palermo | Southern Mediterranean climate |
 | Cagliari | Insular and maritime climate |
 
-The dataset contains daily observations from **1 January 1940 through 31
-December 2025** for:
+The daily variables are:
 
-- mean temperature at 2 metres;
-- maximum temperature at 2 metres;
-- minimum temperature at 2 metres;
-- total precipitation.
+- mean temperature at 2 metres, in °C;
+- maximum temperature at 2 metres, in °C;
+- minimum temperature at 2 metres, in °C;
+- daily precipitation, in mm.
 
-ERA5 is used consistently across the entire period. The incomplete year 2026 is
-not included in annual comparisons.
+The processed dataset contains 188,472 rows: 31,412 daily observations for
+each city from 1 January 1940 to 31 December 2025.
 
 ## Repository structure
 
 ```text
 Weather-Report/
-├── README.md
-├── LICENSE
-├── requirements.txt
 ├── notebooks/
-│   ├── 01_data_collection.ipynb
-│   ├── 02_data_cleaning.ipynb
-│   └── 03_exploratory_data_analysis.ipynb
+│   ├── 01_prepare_data.ipynb
+│   └── 02_climate_analysis.ipynb
 ├── scripts/
 │   ├── __init__.py
+│   ├── config.py
+│   ├── data.py
 │   ├── analysis.py
-│   ├── cities.py
-│   ├── models.py
-│   ├── open_meteo.py
-│   ├── preprocessing.py
-│   ├── statistical_analysis.py
-│   ├── visualization.py
+│   ├── plots.py
 │   └── README.md
 ├── tests/
-│   ├── test_analysis.py
-│   ├── test_preprocessing.py
-│   ├── test_statistical_analysis.py
-│   └── test_weather_models.py
-├── data/                    # Generated locally and ignored by Git
+│   ├── test_data.py
+│   └── test_analysis.py
+├── data/                  # Generated locally and ignored by Git
 │   ├── raw/
 │   └── processed/
-└── reports/
-    └── figures/             # Generated locally and ignored by Git
+├── reports/               # Generated figures, ignored by Git
+├── requirements.txt
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
-### Main modules
+### Python modules
 
-| File | Responsibility |
+| File | Purpose |
 |---|---|
-| `scripts/models.py` | Validated city, API-request and weather-response models |
-| `scripts/cities.py` | Coordinates and metadata for the six cities |
-| `scripts/open_meteo.py` | API requests, retry handling and JSON/CSV serialization |
-| `scripts/preprocessing.py` | Loading, cleaning and data-quality validation |
-| `scripts/analysis.py` | Climate features, anomalies and annual/monthly indicators |
-| `scripts/statistical_analysis.py` | Regressions, confidence intervals and interaction models |
-| `scripts/visualization.py` | Reusable project charts and figure export |
+| `scripts/config.py` | Cities, dates and Open-Meteo variables |
+| `scripts/data.py` | API download, CSV loading, cleaning and validation |
+| `scripts/analysis.py` | Annual summaries, anomalies, trends and period comparisons |
+| `scripts/plots.py` | Six reusable climate visualizations |
 
-The functions contain type hints and docstrings. Additional usage examples are
-available in [`scripts/README.md`](scripts/README.md).
+Every public function has a short docstring. The notebooks import these
+functions instead of duplicating their logic.
 
 ## Installation
 
-Python **3.11 or newer** is recommended.
+Python 3.11 or newer is recommended.
 
-### 1. Clone or download the repository
+### 1. Open the project
 
 ```bash
 git clone <repository-url>
 cd Weather-Report
 ```
 
-If the repository is already available locally, open a terminal in its root
-directory.
-
 ### 2. Create a virtual environment
 
-On macOS or Linux:
+macOS or Linux:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-On Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 py -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-The terminal prompt should display `(.venv)` after activation.
-
-### 3. Install the dependencies
+### 3. Install the libraries
 
 ```bash
 python -m pip install --upgrade pip
@@ -146,212 +117,132 @@ python -m pip install -r requirements.txt
 ### 4. Start JupyterLab
 
 ```bash
-python -m jupyter lab
+jupyter lab
 ```
-
-Because JupyterLab is started from the activated virtual environment, its
-Python kernel should already use the installed project dependencies.
-
-If an IDE does not detect the environment automatically, register it manually:
-
-```bash
-python -m ipykernel install --user \
-  --name weather-report \
-  --display-name "Python (Weather Report)"
-```
-
-Then select **Python (Weather Report)** as the notebook kernel.
 
 ## Running the project
 
-Run the notebooks in numerical order. Each notebook depends on files produced
-by the previous one.
+Run the notebooks in order.
 
-### 1. Data collection
+### Notebook 1: prepare data
 
-Open and run:
+Open `notebooks/01_prepare_data.ipynb` and run all cells.
 
-```text
-notebooks/01_data_collection.ipynb
-```
+The notebook:
 
-This notebook:
+- downloads one raw CSV for each city;
+- reuses existing CSV files to avoid unnecessary API calls;
+- waits and retries after HTTP 429 rate-limit responses;
+- combines the six files with pandas;
+- parses dates and numeric values;
+- checks city and date coverage;
+- checks duplicate rows and missing values;
+- verifies `minimum ≤ mean ≤ maximum` temperature;
+- rejects negative precipitation;
+- saves `data/processed/weather_daily_1940_2025.csv`.
 
-- downloads daily ERA5 data for all six cities;
-- retries temporary API errors automatically;
-- waits before retrying if Open-Meteo returns HTTP 429;
-- stores the original API responses as JSON;
-- stores normalized daily observations as CSV;
-- verifies the expected number of rows.
+The first full download can take several minutes. If Open-Meteo reaches its
+request limit, the downloader waits one minute before trying again.
 
-Generated files are written to:
+### Notebook 2: climate analysis
 
-```text
-data/raw/
-```
+Open `notebooks/02_climate_analysis.ipynb` and run all cells.
 
-The complete download can take several minutes because Open-Meteo applies
-request limits to long historical queries. Do not interrupt a cell while it is
-waiting to retry.
+The notebook calculates descriptive statistics and produces six figures:
 
-### 2. Data cleaning and validation
+1. annual mean temperature and 10-year averages;
+2. annual temperature anomalies;
+3. descriptive temperature trends by city;
+4. hot days and tropical nights;
+5. annual precipitation totals;
+6. seasonal historical-versus-recent temperatures.
 
-Open and run:
+Figures are saved in `reports/figures/eda/`.
 
-```text
-notebooks/02_data_cleaning.ipynb
-```
+## Methods
 
-This notebook:
+### Temperature anomalies
 
-- combines the six raw CSV files;
-- parses and standardizes columns;
-- checks missing and duplicate dates;
-- verifies temperature ordering;
-- checks negative precipitation values;
-- validates complete city-level coverage;
-- writes one analysis-ready daily dataset.
-
-Main output:
+The reference period is 1961–1990. Each city's anomaly is:
 
 ```text
-data/processed/weather_daily_1940_2025.csv
+annual temperature - that city's 1961–1990 mean temperature
 ```
 
-The validated dataset contains **188,472 observations**, or **31,412 daily
-records per city**.
+An anomaly above zero is warmer than the reference average. An anomaly below
+zero is colder.
 
-### 3. Exploratory and statistical analysis
+### Event indicators
 
-Open and run:
+- Hot day: maximum temperature ≥ 30 °C.
+- Tropical night: minimum temperature ≥ 20 °C.
+- Heavy-rain day: precipitation ≥ 20 mm.
 
-```text
-notebooks/03_exploratory_data_analysis.ipynb
-```
+These fixed definitions are transparent and reproducible. They represent
+different levels of rarity in cities with different local climates.
 
-This notebook produces:
+### Descriptive linear trend
 
-- daily temperature distributions;
-- 1961–1990 monthly climate normals;
-- annual temperatures and 10-year rolling averages;
-- annual anomaly plots;
-- monthly anomaly heatmaps;
-- city-specific heatwave thresholds;
-- hot-day and tropical-night indicators;
-- annual trends with 95% confidence intervals;
-- seasonal temperature trends;
-- minimum-versus-maximum temperature trends;
-- a city-by-year interaction model;
-- trends in extreme-heat indicators;
-- separate rainfall amount, frequency and intensity trends;
-- early-versus-recent climate comparisons.
+`numpy.polyfit()` fits a straight line to annual mean temperature. The slope is
+multiplied by ten and reported in °C per decade.
 
-Derived tables are stored in `data/processed/`. Figures are stored in:
+The slope summarizes the average observed direction. It is not a statistical
+significance test and does not prove causation.
 
-```text
-reports/figures/eda/
-```
+### Period and seasonal comparisons
 
-## Testing
+The project compares two complete 30-year periods:
 
-With the virtual environment activated, run:
+- historical: 1941–1970;
+- recent: 1996–2025.
 
-```bash
-python -m unittest discover -s tests -v
-```
+Meteorological seasons are winter (December–February), spring (March–May),
+summer (June–August) and autumn (September–November). December belongs to the
+following winter year. Incomplete boundary seasons are excluded.
 
-The test suite covers:
+## Descriptive results
 
-- API-request construction and response validation;
-- rate-limit retry behavior;
-- data-quality policies;
-- calendar and climate feature engineering;
-- annual precipitation completeness;
-- heatwave identification;
-- trend units and confidence models;
-- seasonal aggregation;
-- city-by-year interaction slopes.
+The linear temperature slopes calculated from the current dataset are:
 
-## Methodology
-
-### Climate reference period
-
-Temperature anomalies use **1961–1990** as a fixed reference period. Monthly
-anomalies compare each month with the same calendar month in the baseline, so
-normal seasonality is removed.
-
-### Heat indicators
-
-- **Hot day:** maximum temperature of at least 30 °C.
-- **Very hot day:** maximum temperature of at least 35 °C.
-- **Tropical night:** minimum temperature of at least 20 °C.
-- **Heatwave:** at least three consecutive summer days at or above the city's
-  90th percentile of summer maximum temperature during 1961–1990.
-
-### Statistical models
-
-- Individual annual and seasonal trends use ordinary least squares.
-- Confidence intervals use Newey–West HAC covariance with one lag.
-- The pooled city-by-year model uses HC3 robust covariance.
-- Slopes are reported per decade rather than per year.
-- Rainfall is analysed separately as amount, frequency and intensity.
-
-Statistical significance is not treated as proof of causation. Effect sizes,
-confidence intervals and dataset limitations must be considered together.
-
-## Main findings
-
-The exploratory annual temperature trends are approximately:
-
-| City | Temperature trend |
+| City | °C per decade |
 |---|---:|
-| Milan | +0.37 °C per decade |
-| Turin | +0.37 °C per decade |
-| Palermo | +0.27 °C per decade |
-| Rome | +0.23 °C per decade |
-| Cagliari | +0.21 °C per decade |
-| Bari | +0.19 °C per decade |
+| Milan | +0.37 |
+| Turin | +0.37 |
+| Palermo | +0.27 |
+| Rome | +0.23 |
+| Cagliari | +0.21 |
+| Bari | +0.19 |
 
-All annual temperature confidence intervals are above zero. The city-by-year
-model does not distinguish Turin's warming rate from Milan's, while Bari,
-Cagliari, Palermo and Rome show slower trends than Milan.
+All six recent-period temperature means are higher than their historical-period
+means. The differences range from approximately +1.38 °C in Bari to +2.63 °C
+in Milan.
 
-Temperature trends vary by season and between daily minimum and maximum
-temperature. Several hot-day, tropical-night and heatwave indicators increase
-over time. Annual precipitation totals do not show a uniform significant trend,
-but frequency and intensity indicators reveal local changes that annual totals
-alone would hide.
+The average annual number of hot days is also higher in the recent period for
+all cities. The largest descriptive increases are approximately 27 additional
+days in Milan and 26 in Turin.
 
-## Data-quality notes
+Precipitation is much more variable. The period differences are comparatively
+small and do not form one consistent direction across all six cities. These are
+descriptive observations, not claims of statistical significance.
+
+## Data-quality decisions
 
 - Open-Meteo returns one missing precipitation value on 1 January 1940 for
   every city.
-- These six values remain missing and are never replaced with invented values.
-- Precipitation indicators for 1940 are therefore excluded from annual trend
-  models.
-- ERA5 represents a model grid cell around each city, not a single urban weather
-  station.
+- These six missing values remain missing; they are never replaced with zero.
+- Annual precipitation for 1940 is therefore left missing.
+- Temperature comparisons use the same years for every city.
+- API failures stop the pipeline with a readable error instead of silently
+  producing partial data.
 
-## Limitations
+## Libraries
 
-- The analysis cannot fully separate regional climate change from urban
-  heat-island effects.
-- ERA5 spatial resolution limits interpretation of highly localized rainfall
-  events.
-- Linear trends summarize long-term direction but do not capture every form of
-  nonlinear climate variability.
-- Regression results quantify associations with time; they do not perform
-  causal attribution.
-
-## Reproducibility
-
-Raw data, processed data and figures are intentionally excluded from Git because
-they are generated artifacts. They can be reproduced by running the three
-notebooks in order.
-
-The API responses, source-file names, selected ERA5 model, coordinates, units,
-date interval and baseline assumptions are retained throughout the workflow.
+- `pandas`: loading, cleaning, grouping and aggregation;
+- `numpy`: descriptive linear trends;
+- `requests`: Open-Meteo HTTP requests;
+- `matplotlib` and `seaborn`: visualization;
+- `jupyterlab`: notebook execution and presentation.
 
 ## License
 
-See [`LICENSE`](LICENSE) for repository licensing information.
+See [`LICENSE`](LICENSE).
