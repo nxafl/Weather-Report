@@ -326,6 +326,121 @@ def plot_precipitation_indicators(annual_data: Any) -> Any:
     return figure
 
 
+def plot_trend_intervals(
+    trends: Any,
+    *,
+    label_column: str,
+    title: str,
+    x_label: str,
+    estimate_column: str = "slope_per_decade",
+    lower_column: str = "ci_lower_per_decade",
+    upper_column: str = "ci_upper_per_decade",
+) -> Any:
+    """Plot trend point estimates with horizontal confidence intervals.
+
+    Parameters
+    ----------
+    trends:
+        Table containing one row per estimate.
+    label_column:
+        Human-readable label displayed on the y-axis.
+    title, x_label:
+        Figure title and horizontal-axis label.
+    estimate_column, lower_column, upper_column:
+        Columns containing estimates and confidence limits.
+    """
+    plt, _ = _plot_libraries()
+    _require_columns(
+        trends,
+        (label_column, estimate_column, lower_column, upper_column),
+    )
+    ordered = trends.sort_values(estimate_column).reset_index(drop=True)
+    estimates = ordered[estimate_column].astype(float)
+    lower_errors = estimates - ordered[lower_column].astype(float)
+    upper_errors = ordered[upper_column].astype(float) - estimates
+
+    figure_height = max(4.5, 0.42 * len(ordered) + 1.8)
+    figure, axis = plt.subplots(figsize=(10, figure_height))
+    axis.errorbar(
+        estimates,
+        ordered[label_column],
+        xerr=[lower_errors, upper_errors],
+        fmt="o",
+        color="#0072B2",
+        ecolor="#777777",
+        capsize=3,
+        markersize=6,
+    )
+    axis.axvline(0, color="#222222", linewidth=0.9)
+    axis.set(title=title, xlabel=x_label, ylabel="")
+    figure.tight_layout()
+    return figure
+
+
+def plot_trend_heatmap(
+    trends: Any,
+    *,
+    row_column: str,
+    column_column: str,
+    title: str,
+    colorbar_label: str,
+    estimate_column: str = "slope_per_decade",
+    significance_column: str | None = "significance",
+) -> Any:
+    """Plot a city-by-category heatmap of trend estimates.
+
+    When a significance column is supplied, conventional symbols are appended
+    to the numeric annotations while color continues to represent the slope.
+    """
+    plt, sns = _plot_libraries()
+    required = [row_column, column_column, estimate_column]
+    if significance_column is not None:
+        required.append(significance_column)
+    _require_columns(trends, required)
+
+    values = trends.pivot(
+        index=row_column,
+        columns=column_column,
+        values=estimate_column,
+    )
+    if significance_column is None:
+        annotations = values.map(lambda value: f"{value:.2f}" if value == value else "")
+    else:
+        symbols = trends.pivot(
+            index=row_column,
+            columns=column_column,
+            values=significance_column,
+        )
+        annotations = values.copy().astype("object")
+        for row in values.index:
+            for column in values.columns:
+                value = values.loc[row, column]
+                symbol = symbols.loc[row, column]
+                annotations.loc[row, column] = (
+                    f"{value:.2f}{symbol}" if value == value else ""
+                )
+
+    limit = max(abs(float(values.min().min())), abs(float(values.max().max())))
+    figure_width = max(7.5, 1.5 * len(values.columns) + 4)
+    figure_height = max(4.5, 0.65 * len(values.index) + 2)
+    figure, axis = plt.subplots(figsize=(figure_width, figure_height))
+    heatmap = sns.heatmap(
+        values,
+        annot=annotations,
+        fmt="",
+        cmap="RdBu_r",
+        center=0,
+        vmin=-limit,
+        vmax=limit,
+        linewidths=0.5,
+        cbar_kws={"label": colorbar_label},
+        ax=axis,
+    )
+    heatmap.set(title=title, xlabel="", ylabel="")
+    figure.tight_layout()
+    return figure
+
+
 def _city_groups(data: Any) -> list[tuple[str, Any]]:
     """Return city groups in their first-occurrence order."""
     present = list(data["city_slug"].drop_duplicates())

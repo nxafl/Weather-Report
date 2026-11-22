@@ -126,6 +126,47 @@ trends = estimate_temperature_trends(annual)
 Run `notebooks/03_exploratory_data_analysis.ipynb` for the complete sequence of
 tables and eight publication-ready figures.
 
+## Statistical trend analysis
+
+The same EDA notebook continues with inferential blocks for annual and seasonal
+temperature trends, minimum-versus-maximum temperature, city-by-year
+interactions, extreme heat, and separate rainfall amount, frequency and
+intensity indicators.
+
+```python
+from scripts import (
+    add_significance_labels,
+    calculate_seasonal_indicators,
+    fit_city_year_interaction,
+    fit_grouped_linear_trends,
+)
+
+annual_trends = add_significance_labels(
+    fit_grouped_linear_trends(
+        annual,
+        value_column="temperature_mean",
+        confidence_level=0.95,
+        hac_lags=1,
+    )
+)
+
+seasonal = calculate_seasonal_indicators(weather)
+seasonal_trends = fit_grouped_linear_trends(
+    seasonal,
+    value_column="temperature_mean",
+    group_columns=("city", "city_slug", "season"),
+)
+
+interaction = fit_city_year_interaction(
+    annual,
+    reference_city_slug="milan",
+)
+```
+
+Grouped time-series regressions use HAC covariance. The pooled city interaction
+model uses HC3 robust covariance. Report effect sizes and confidence intervals,
+not significance symbols alone.
+
 ## Download a short period while developing
 
 Use a small date range when testing a notebook to avoid repeatedly requesting

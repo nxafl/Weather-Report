@@ -52,6 +52,9 @@ class AnalysisTests(unittest.TestCase):
 
         self.assertTrue(annual.loc[0, "precipitation_total"] != annual.loc[0, "precipitation_total"])
         self.assertEqual(annual.loc[0, "precipitation_missing_days"], 1)
+        self.assertAlmostEqual(annual.loc[0, "temperature_max_mean"], 10.5)
+        self.assertAlmostEqual(annual.loc[0, "temperature_min_mean"], 0.5)
+        self.assertAlmostEqual(annual.loc[0, "diurnal_temperature_range"], 10.0)
 
     def test_heatwave_requires_three_consecutive_days(self) -> None:
         """Four consecutive recent exceedances should form one four-day heatwave."""

@@ -217,6 +217,9 @@ def calculate_annual_indicators(data: Any, rolling_window: int = 10) -> Any:
         raise ValueError("rolling_window must be at least 2 years.")
 
     work = data.copy()
+    work["daily_temperature_range"] = (
+        work["temperature_2m_max"] - work["temperature_2m_min"]
+    )
     work["is_hot_day"] = work["temperature_2m_max"] >= 30.0
     work["is_very_hot_day"] = work["temperature_2m_max"] >= 35.0
     work["is_tropical_night"] = work["temperature_2m_min"] >= 20.0
@@ -228,6 +231,9 @@ def calculate_annual_indicators(data: Any, rolling_window: int = 10) -> Any:
         work.groupby(keys, observed=True, sort=True)
         .agg(
             temperature_mean=("temperature_2m_mean", "mean"),
+            temperature_max_mean=("temperature_2m_max", "mean"),
+            temperature_min_mean=("temperature_2m_min", "mean"),
+            diurnal_temperature_range=("daily_temperature_range", "mean"),
             temperature_max=("temperature_2m_max", "max"),
             temperature_min=("temperature_2m_min", "min"),
             hot_days=("is_hot_day", "sum"),
