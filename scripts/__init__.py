@@ -19,18 +19,32 @@ from scripts.open_meteo import (
     save_records_csv,
     save_response_json,
 )
+from scripts.preprocessing import (
+    DataQualityReport,
+    build_quality_report,
+    clean_weather_data,
+    discover_raw_csv_files,
+    load_raw_weather_csvs,
+    save_processed_csv,
+)
 
 __all__ = [
     "DEFAULT_DAILY_VARIABLES",
     "ITALIAN_CITIES",
     "ArchiveRequest",
     "City",
+    "DataQualityReport",
     "OpenMeteoError",
     "WeatherDataset",
     "build_archive_url",
+    "build_quality_report",
+    "clean_weather_data",
+    "discover_raw_csv_files",
     "fetch_city_weather",
     "fetch_multiple_cities",
     "get_cities",
+    "load_raw_weather_csvs",
     "save_records_csv",
+    "save_processed_csv",
     "save_response_json",
 ]
