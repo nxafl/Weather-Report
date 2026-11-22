@@ -94,6 +94,38 @@ value for 1 January 1940 in any of the six city responses. The cleaning notebook
 keeps those six boundary values missing, reports them as an explicit allowed
 exception and does not invent replacement values.
 
+## Exploratory climate analysis
+
+The EDA functions calculate calendar features, monthly climate normals,
+temperature anomalies, annual indicators, city-specific heatwaves and
+descriptive warming rates. Plotting functions use the same city colors and
+figure style throughout the project.
+
+```python
+import pandas as pd
+from scripts import (
+    add_annual_temperature_anomalies,
+    add_calendar_features,
+    calculate_annual_indicators,
+    calculate_heatwave_indicators,
+    estimate_temperature_trends,
+)
+
+weather = pd.read_csv(
+    "data/processed/weather_daily_1940_2025.csv",
+    parse_dates=["date"],
+)
+weather = add_calendar_features(weather)
+annual = add_annual_temperature_anomalies(
+    calculate_annual_indicators(weather)
+)
+thresholds, heatwaves = calculate_heatwave_indicators(weather)
+trends = estimate_temperature_trends(annual)
+```
+
+Run `notebooks/03_exploratory_data_analysis.ipynb` for the complete sequence of
+tables and eight publication-ready figures.
+
 ## Download a short period while developing
 
 Use a small date range when testing a notebook to avoid repeatedly requesting
